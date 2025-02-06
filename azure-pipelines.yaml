@@ -1,0 +1,60 @@
+name: $(SourceBranchName)_$(Build.BuildId)
+
+trigger:
+  batch: true
+  branches:
+    include:
+      - main
+      - preprod
+  paths:
+    exclude:
+      - README.md
+      - .gitignore
+
+#=====================================================================#
+# ┌───────────────────────────────────────────────────────────────────┐
+# │                             MODIFICABLE                           │
+# ├───────────────────────────────────────────────────────────────────┤
+# Variables obtenidas del estandar de nombramiento para repositorios de código fuente
+variables:
+  - name: namespace
+    value: 'devopsdummy'
+
+  - name: tecnologia
+    value: 'springboot'
+    
+  - name: componente
+    value: 'subpage'
+
+  - name: identificador
+    value: 'mfe'
+
+  - name: tipo
+    value: 'frontend'
+# └───────────────────────────────────────────────────────────────────┘
+#=====================================================================#
+ 
+  - name: ambiente
+    ${{ if eq( variables['Build.SourceBranchName'], 'main') }}:
+      value: 'prod'
+    ${{ elseif eq( variables['Build.SourceBranchName'], 'preprod') }}:
+      value: 'preprod'
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: DevOps/devops-pipeline-cicd
+      ref: 'refs/heads/feature/segmentacion_templates'
+
+    - repository: Openshift
+      type: git
+      name: Openshift
+      ref: $(Build.SourceBranchName)
+
+stages:
+  - template: master-azure-pipelines.yaml@templates
+    parameters:
+      param_tecnologia: ${{ variables.tecnologia }}
+      param_ambiente: ${{ variables.ambiente }}
+
