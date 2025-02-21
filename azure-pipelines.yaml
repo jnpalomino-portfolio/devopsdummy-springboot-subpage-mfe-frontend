@@ -61,4 +61,3 @@ stages:
       param_tecnologia: ${{ variables.tecnologia }}
       param_ambiente: ${{ variables.ambiente }}
       param_gestorDependencias: ${{ variables.gestorDependencias }}
-
